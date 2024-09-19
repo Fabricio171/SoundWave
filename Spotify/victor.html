@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 
 <head>
     <meta charset="UTF-8">
@@ -12,7 +12,7 @@
         body {
             
             background: rgb(222,149,207);
-            background: linear-gradient(0deg, rgba(222,149,207,1) 10%, rgba(159,78,185,1) 64%);
+            background: linear-gradient(0deg, rgb(0, 0, 0) 10%, rgb(113, 44, 136) 64%);
             height: 100vh;
             color: white;
             font-family: sans-serif;
@@ -21,10 +21,7 @@
             align-items: center;
         }
 
-        img {
-            height: 300px;
-            width: 300px;
-        }
+        /*controle do butão*/
         #below-cover {
             display: flex;
             flex-direction: row;
@@ -39,6 +36,14 @@
             align-items: center;
             margin-top: 1.5em;
         }
+        /* tirando o fundo dos butoes erdaqndo da classe "PAI" */
+        button {
+            background-color: inherit;
+            color: inherit;
+            border: none;
+        }
+        
+        /*alteração de tamanho pelo tutrial, mas não esta funcionando*/
         .button{
             font-size: 1.5em;
         }
@@ -48,10 +53,30 @@
         .button-navigate {
             font-size: 3em; 
         }
+        /*alteração de tamanho corrigido*/
+        #play {
+            font-size: 3em;
+        }
+
+        #previous {
+            font-size: 2em;
+        }
+
+        #next {
+            font-size: 2em;
+        }
+
+        /* edita a capa */
         #cover{
             height: 300px;
             width: 300px;
         }
+        img {
+            height: 300px;
+            width: 300px;
+        }
+
+        /*edita o titulo*/
         #playlist-title {
             display: flex;
             flex-direction: row;
@@ -66,6 +91,7 @@
             align-items: center;
             margin: 3em 0 1em 0;
         }
+        /* trocar a cor do nome da banda */
         #song-name {
             font-size: 1.5em;
             font-weight: bolder;
@@ -73,6 +99,8 @@
         .light-color {
             color: rgb(58, 59, 59);
         }
+
+        /* a barra de carregamento */
         #progress-bar {
             background-color:rgb(58, 59, 59);
             height: 3px;
@@ -80,13 +108,14 @@
             border-radius: 15px;
 
         }
-
         #current-progress {
             background-color: white;
             height: inherit;
             width: 50%;
             border-radius: inherit;
         }
+
+        
     </style>
 
 
@@ -98,7 +127,7 @@
 
         <h4 id="playlist-title">Playlist #3</h4>
         <img id='cover' src="img/killer.jpg"></img>
-        <audio id="audio" src="music/music_ACDC_Highway to Hell.mp3"></audio>
+        <audio id="audio" src="music/Killer-Queen.mp3"></audio>
 
         <div id="bellow-cover">
             <div id="song-info">
@@ -106,17 +135,17 @@
                 <div id="band-name" class ="button light-color">Queen</div>
             </div>
             
-            <div id="like" class="button"><i class="bi bi-heart"></i></div>
+            <button id="like" class="button"><i class="bi bi-heart"></i></button>
 
         </div>
         
         <div id="progress-bar">
             <div id="current-progress"></div>
         </div>
-
+ 
         <div id="button-container">
             <button id="shuffle"  class="button"><i class="bi bi-shuffle"></i></button>
-        <button id="previous"  class="button"><i class="bi bi-skip-start-fill"></i></button>
+            <button id="previous"  class="button"><i class="bi bi-skip-start-fill"></i></button>
             <button id="play"  class="button"><i class="bi bi-play-circle-fill"></i></button>
             <button id="next"  class="button"><i class="bi bi-skip-end-fill"></i></button>
             <button id="repeat"  class ="button light-color"><i class="bi bi-repeat"></i></button>
@@ -126,13 +155,33 @@
 
     <script>
         const songName = document.getElementById("song-name");
-
         const song = document.getElementById("audio");
+        const play = document.getElementById("play");
 
         songName.innerText = 'As You Were';
-        song.play();
-        song.pause();
+        let isPlaying = false;
 
+        function playSong() {
+            play.querySelector(".bi").classList.remove("bi-play-circle-fill");
+            play.querySelector(".bi").classList.add("bi-pause-circle-fill");
+            song.play();
+            isPlaying = true;
+        }
+        function pauseSong() {
+            play.querySelector(".bi").classList.add("bi-play-circle-fill");
+            play.querySelector(".bi").classList.remove("bi-pause-circle-fill");
+            song.pause();
+            isPlaying = false;
+        }
+        function playPauseDecider() {
+        if (isPlaying === true) {
+            pauseSong();
+        } else {
+            playSong();
+        }
+        }
+        
+        play.addEventListener("click", playSong);
     </script>
 </body>
 
