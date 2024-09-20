@@ -5,19 +5,18 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Music Player</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
     <style>
         body {
-            background-image: linear-gradient(rgb(150, 134, 72), rgb(77, 73, 58));
+            background-image: linear-gradient(rgb(150, 134, 72), rgb(56, 47, 18));
             height: 98.3vh;
             color: white;
             font-family: sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
-
         }
 
         button {
@@ -27,8 +26,8 @@
         }
 
         #cover {
-            height: 300px;
-            width: 300px;
+            height: 200px;
+            width: 200px;
         }
 
         #below-cover {
@@ -138,13 +137,13 @@
     <div class="music-container">
 
         <h4 id="playlist-title">Playlist Hashtag</h4>
-        <img id='cover' alt="Disc Cover."></img>
+        <img id="cover" alt="Capa do álbum"></img>
         <audio id='audio'></audio>
 
         <div id="below-cover">
             <div id="song-info">
-                <div id="song-name">Highway to Hell</div>
-                <div id="band-name">AC/DC</div>
+                <div id="song-name"></div>
+                <div id="band-name"></div>
             </div>
             <button id="like" class="button light-color"><i class="bi bi-heart"></i></button>
 
@@ -167,227 +166,187 @@
             <button id="repeat" class="button"><i class="bi bi-repeat"></i></button>
         </div>
     </div>
-    </div>
 
     <script>
-        const songName = document.getElementById('song-name');
-        const bandName = document.getElementById('band-name');
-        const song = document.getElementById('audio');
-        const cover = document.getElementById('cover');
-        const play = document.getElementById('play');
-        const next = document.getElementById('next');
-        const previous = document.getElementById('previous');
-        const likeButton = document.getElementById('like');
-        const currentProgress = document.getElementById('current-progress');
-        const progressContainer = document.getElementById('progress-container');
-        const shuffleButton = document.getElementById('shuffle');
-        const repeatButton = document.getElementById('repeat');
-        const songTime = document.getElementById('song-time');
-        const totalTime = document.getElementById('total-time');
+       // Elementos DOM
+const songName = document.getElementById('song-name'); //nome da musica
+const bandName = document.getElementById('band-name'); //nome da banda
+const song = document.getElementById('audio'); // audio que vai trazer
+const cover = document.getElementById('cover'); // imagem da musica
+const play = document.getElementById('play'); // quando click no play, ele começa a tocar a musica
+const next = document.getElementById('next'); // voltar uma musica
+const previous = document.getElementById('previous'); // avançar uma musica
+const likeButton = document.getElementById('like'); // coraçao 
+const currentProgress = document.getElementById('current-progress'); // tempo da musica
+const progressContainer = document.getElementById('progress-container');  //tempo da musica
+const shuffleButton = document.getElementById('shuffle');
+const repeatButton = document.getElementById('repeat'); // repete a musica
+const songTime = document.getElementById('song-time'); // quantidade de tempo
+const totalTime = document.getElementById('total-time');   // tempo maximo da musica
 
+// músicas escolhidas
+const highwayToHell = {
+    songName: 'Highway to Hell',
+    artist: 'AC/DC',
+    file: 'highway_to_hell',
+    liked: false,
+};
 
-        const asYouWere = {
-            songName: 'As You Were',
-            artist: 'TrackTribe',
-            file: 'as_you_were',
-            liked: false,
-        };
-        const boomBapFlick = {
-            songName: 'Boom Bap Flick',
-            artist: 'Quincas Moreira',
-            file: 'boom_bap_flick',
-            liked: false,
-        };
-        const cantHide = {
-            songName: "Can't Hide",
-            artist: 'Otis Mcdonald',
-            file: 'cant_hide',
-            liked: false,
-        };
+const billieJean = {
+    songName: 'Billie Jean',
+    artist: 'Michael Jackson',
+    file: 'BillieJean',
+    liked: false,
+};
+// fecha músicas escolhidas
 
-        let isPlaying = false;
-        let isShuffled = false;
-        let repeatOn = false;
-        const originalPlaylist = JSON.parse(localStorage.getItem('playlist')) ?? [
-            asYouWere,
-            boomBapFlick,
-            cantHide,
-        ];
+// Playlist e variáveis
+let isPlaying = false;  
+let isShuffled = false;
+let repeatOn = false;
+let currentSongIndex = 0;
+const originalPlaylist = [highwayToHell, billieJean]; // chama a variavel com a musica
+let playlist = [...originalPlaylist];
 
-        function likeButtonRender() {
-            if (sortedPlaylist[index].liked === true) {
-                likeButton.querySelector('.bi').classList.remove('bi-heart');
-                likeButton.querySelector('.bi').classList.add('bi-heart-fill');
-                likeButton.classList.add('button-active');
-            } else {
-                likeButton.querySelector('.bi').classList.add('bi-heart');
-                likeButton.querySelector('.bi').classList.remove('bi-heart-fill');
-                likeButton.classList.remove('button-active');
-            }
-        }
-        function likeButtonClicked() {
-            if (sortedPlaylist[index].liked === false) {
-                sortedPlaylist[index].liked = true;
-            } else {
-                sortedPlaylist[index].liked = false;
-            }
-            likeButtonRender();
-            localStorage.setItem('playlist', JSON.stringify(originalPlaylist));
-        }
+// Função para atualizar o botão de like
+function likeButtonRender() {
+    if (playlist[currentSongIndex].liked) {
+        likeButton.querySelector('.bi').classList.remove('bi-heart');
+        likeButton.querySelector('.bi').classList.add('bi-heart-fill');
+        likeButton.classList.add('button-active');
+    } else {
+        likeButton.querySelector('.bi').classList.add('bi-heart');
+        likeButton.querySelector('.bi').classList.remove('bi-heart-fill');
+        likeButton.classList.remove('button-active');
+    }
+}
 
-        function initializeSong() {
+// Alternar estado de "like"
+function likeButtonClicked() {
+    playlist[currentSongIndex].liked = !playlist[currentSongIndex].liked;
+    likeButtonRender();
+}
 
-            cover.src = `/images/${playlist[currentSong].file}.jpg`;
-            songName.innerText = playlist[currentSong].songName;
-            bandName.innerText = playlist[currentSong].artist;
-            song.src = `/songs/${playlist[currentSong].file}.mp3`;
-            likeButtonRender();
+// Inicializar a música atual
+function initializeSong() {
+    const currentSong = playlist[currentSongIndex];
+    cover.src = `img/${currentSong.file}.jpg`;
+    songName.innerText = currentSong.songName;
+    bandName.innerText = currentSong.artist;
+    song.src = `music/${currentSong.file}.mp3`;
+    likeButtonRender();
+}
 
-        }
+// Reproduzir a música
+function playSong() {
+    play.querySelector(".bi").classList.remove("bi-play-circle-fill");
+    play.querySelector(".bi").classList.add("bi-pause-circle-fill");
+    song.play();
+    isPlaying = true;
+}
 
-        initializeSong();
+// Pausar a música
+function pauseSong() {
+    play.querySelector(".bi").classList.add("bi-play-circle-fill");
+    play.querySelector(".bi").classList.remove("bi-pause-circle-fill");
+    song.pause();
+    isPlaying = false;
+}
 
-        function playSong() {
-            play.querySelector(".bi").classList.remove("bi-play-circle-fill");
-            play.querySelector(".bi").classList.add("bi-pause-circle-fill");
-            song.play();
-            isPlaying = true;
-        }
-        function pauseSong() {
-            play.querySelector(".bi").classList.add("bi-play-circle-fill");
-            play.querySelector(".bi").classList.remove("bi-pause-circle-fill");
-            song.pause();
-            isPlaying = false;
-        }
-
-        function playPauseDecider() {
-            if (isPlaying === true) {
-                pauseSong();
-            } else {
-                playSong();
-            }
-        }
-
-        function shuffleButtonClicked() {
-            if (isShuffled === false) {
-                isShuffled = true;
-                shuffleArray();
-            }
-        }
-
-        function previousSong() {
-            if (index === 0) {
-                index = playlist.length - 1;
-            }
-            else {
-                index -= 1;
-            }
-        }
-        initializeSong();
+// Alternar play/pause
+function playPauseDecider() {
+    if (isPlaying) {
+        pauseSong();
+    } else {
         playSong();
+    }
+}
 
-        function nextSong() {
-            if (index === playlist.length - 1) {
-                index = 0;
-            }
-            else {
-                index += 1;
-            }
-            initializeSong();
-            playSong();
-        }
+// Música anterior
+function previousSong() {
+    currentSongIndex = (currentSongIndex === 0) ? playlist.length - 1 : currentSongIndex - 1;
+    initializeSong();
+}
 
-        function updateProgress() {
-            const barWidth = (song.currentTime / song.duration) * 100;
-            currentProgress.style.setProperty('--progress', `${barWidth}%`);
-            songTime.innerText = toHHMMSS(song.currentTime);
-        }
+// Próxima música
+function nextSong() {
+    currentSongIndex = (currentSongIndex === playlist.length - 1) ? 0 : currentSongIndex + 1;
+    initializeSong();
+}
 
-        function jumpTo(event) {
-            const width = progressContainer.clientWidth;
-            const clickPosition = event.offsetX;
-            const jumpToTime = (clickPosition / width) * song.duration;
-            song.currentTime = jumpToTime;
-        }
+// Atualizar progresso da música
+function updateProgress() {
+    const barWidth = (song.currentTime / song.duration) * 100;
+    currentProgress.style.setProperty('--progress', `${barWidth}%`);
+    songTime.innerText = toHHMMSS(song.currentTime);
+}
 
-        function shuffleArray(preShuffleArray) {
-            const size = sortedPlaylist.length;
-            let currentIndex = size - 1;
-            while (currentIndex > 0) {
-                Math.random();
-            }
-        }
+// Pular para uma parte específica da música
+function jumpTo(event) {
+    const width = progressContainer.clientWidth;
+    const clickPosition = event.offsetX;
+    const jumpToTime = (clickPosition / width) * song.duration;
+    song.currentTime = jumpToTime;
+}
 
-        function shuffleArray(preShuffleArray) {
-            const size = preShuffleArray.length;
-            let currentIndex = size - 1;
-            while (currentIndex > 0) {
-                Math.randomIndex = Math.floor(Math.random() * size);
-                let aux = preShuffleArray[currentIndex];
-                preShuffleArray[currentIndex] = preShuffleArray[randomIndex]
-                preShuffleArray[randomIndex] = aux;
-                currentIndex -= 1;
-            }
-        }
+// Embaralhar playlist
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
 
-        function shuffleButtonClicked() {
-            if (isShuffled === false) {
-                isShuffled = true;
-                shuffleArray(sortedPlaylist);
-                shuffleButton.classList.add('button-active');
-            }
-            else {
-                isShuffled = false;
-                sortedPlaylist = [...originalplaylist];
-                shuffleButton.classList.remove('button-active');
-            }
-        }
+// Alternar botão de shuffle
+function shuffleButtonClicked() {
+    isShuffled = !isShuffled;
+    if (isShuffled) {
+        shuffleArray(playlist);
+    } else {
+        playlist = [...originalPlaylist];
+    }
+    shuffleButton.classList.toggle('button-active');
+}
 
-        function repeatButtonClicked() {
-            if (repeatOn === false) {
-                repeatOn = true;
-                repeatButton.classList.add('button-active');
-            } else {
-                repeatOn = false;
-                repeatButton.classList.remove('button-active');
-            }
-        }
+// Alternar botão de repeat
+function repeatButtonClicked() {
+    repeatOn = !repeatOn;
+    repeatButton.classList.toggle('button-active');
+}
 
-        function nextOrRepeat() {
-            if (repeatOn === false) {
-                nextSong();
-            } else {
-                playSong();
-            }
-        }
+// Converter tempo para formato HH:MM:SS
+function toHHMMSS(seconds) {
+    const hour = Math.floor(seconds / 3600);
+    const min = Math.floor((seconds - hour * 3600) / 60);
+    const sec = Math.floor(seconds - hour * 3600 - min * 60);
+    return `${hour.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
+}
 
-        function toHHMMSS(originalNumber) {
-            let hours = Math.floor(originalNumber / 3600);
-            let min = Math.floor(originalNumber - hours * 3600 / 60);
-            let secs = Math.floor(originalNumber - hours * 3600 - min * 60);
+// Atualizar tempo total da música
+function updateTotalTime() {
+    totalTime.innerText = toHHMMSS(song.duration);
+}
 
-            return `${hours.toString().padStart(2, '0')}:${min.toString()
-                .padStart(2, '0')}:${secs.toString().padStart(2, "0")}`;
-        }
+// Configurar eventos
+song.addEventListener('ended', () => {
+    if (repeatOn) {
+        playSong();
+    } else {
+        nextSong();
+    }
+});
+song.addEventListener('timeupdate', updateProgress);
+song.addEventListener('loadedmetadata', updateTotalTime);
+progressContainer.addEventListener('click', jumpTo);
+play.addEventListener('click', playPauseDecider);
+next.addEventListener('click', nextSong);
+previous.addEventListener('click', previousSong);
+shuffleButton.addEventListener('click', shuffleButtonClicked);
+repeatButton.addEventListener('click', repeatButtonClicked);
+likeButton.addEventListener('click', likeButtonClicked);
 
-        function updateCurrentTime() {
-            songTime.innerText = song.currentTime;
-        }
-
-        function updateTotalTime() {
-            songTime.innerText = song.duration;
-        }
-
-        play.addEventListener("click", playPauseDecider);
-        previous.addEventListener("click", previousSong);
-        next.addEventListener("click", nextSong);
-        song.addEventListener("timeupdate", updateProgress);
-        song.addEventListener("ended", nextOrRepeat);
-        song.addEventListener("loadedmetadata", updateTotalTime);
-        progressContainer.addEventListener("click", jumpTo);
-        shuffleButton.addEventListener("click", shuffleButtonClicked);
-        repeatButton.addEventListener('click', repeatButtonClicked);
-        likeButton.addEventListener('click', likeButtonClicked);
+// Inicializar a primeira música
+initializeSong();
 
     </script>
 
