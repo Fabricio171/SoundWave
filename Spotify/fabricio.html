@@ -198,6 +198,7 @@ const billieJean = {
     file: 'BillieJean',
     liked: false,
 };
+
 // fecha músicas escolhidas
 
 // Playlist e variáveis
@@ -255,7 +256,7 @@ function pauseSong() {
 
 // Alternar play/pause
 function playPauseDecider() {
-    if (isPlaying) {
+    if (isPlaying == true) {
         pauseSong();
     } else {
         playSong();
@@ -271,6 +272,7 @@ function previousSong() {
 // Próxima música
 function nextSong() {
     currentSongIndex = (currentSongIndex === playlist.length - 1) ? 0 : currentSongIndex + 1;
+    pauseSong(); 
     initializeSong();
 }
 
