@@ -7,143 +7,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Music Player</title>
 
+    <link rel="stylesheet" href="css/Style.css">    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
-    <style>
-        body {
-            background-image: linear-gradient(rgb(150, 134, 72), rgb(56, 47, 18));
-            height: 98.3vh;
-            color: white;
-            font-family: sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
 
-        button {
-            background-color: inherit;
-            color: inherit;
-            border: none;
-        }
-
-        #cover {
-            height: 200px;
-            width: 200px;
-        }
-
-        #below-cover {
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        #button-container {
-            display: flex;
-            flex-direction: row;
-            justify-content: space-around;
-            align-items: center;
-        }
-
-        .button {
-            font-size: 1.5em;
-            cursor: pointer;
-        }
-
-        .button-navigate {
-            font-size: 3em;
-        }
-
-        .button-biggest {
-            font-size: 4em;
-        }
-
-        #playlist-title {
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            margin: 1em 0 4em 0;
-        }
-
-        .button-active {
-            color: rgb(0, 128, 62)
-        }
-
-        #time-box {
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            font-size: smaller;
-            margin-top: 0.5em;
-        }
-
-        #below-cover {
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: center;
-            margin: 3em 0 1em 0;
-        }
-
-        #song-name {
-            font-size: 1.5em;
-            font-weight: bolder;
-        }
-
-        .light-color {
-            color: rgb(120, 132, 134);
-        }
-
-        #progress-bar {
-            background-color: rgb(120, 132, 134);
-            height: 3px;
-            width: 100%;
-            border-radius: 15px;
-        }
-
-        #current-progress {
-            --progress: 0%;
-            background-color: white;
-            height: inherit;
-            width: var(--progress);
-            border-radius: inherit;
-        }
-
-        #progress-container {
-            padding-bottom: 1em;
-            cursor: pointer;
-        }
-
-        .button-active {
-            color: rgb(0, 128, 62)
-        }
-
-        #play {
-            font-size: 3em;
-        }
-
-        #previous {
-            font-size: 2em;
-        }
-
-        #next {
-            font-size: 2em;
-        }
-    </style>
 
 </head>
 
 <body>
-
+<main>
     <div class="music-container">
 
-        <h4 id="playlist-title">Playlist Hashtag</h4>
+        <h4 id="playlist-title"> 🙄Só as Brabas 😱✅💋</h4>
         <img id="cover" alt="Capa do álbum"></img>
         <audio id='audio'></audio>
 
         <div id="below-cover">
             <div id="song-info">
                 <div id="song-name"></div>
-                <div id="band-name"></div>
+                <div id="band-name" class="light-color"></div>
             </div>
             <button id="like" class="button light-color"><i class="bi bi-heart"></i></button>
 
@@ -153,8 +34,8 @@
                 <div id="current-progress"></div>
             </div>
             <div id="time-box">
-                <div id="song-time">00:00:00</div>
-                <div id="total-time">00:00:00</div>
+                <div id="song-time">00:00</div>
+                <div id="total-time">00:00</div>
             </div>
         </div>
 
@@ -166,191 +47,8 @@
             <button id="repeat" class="button"><i class="bi bi-repeat"></i></button>
         </div>
     </div>
-
-    <script>
-       // Elementos DOM
-const songName = document.getElementById('song-name'); //nome da musica
-const bandName = document.getElementById('band-name'); //nome da banda
-const song = document.getElementById('audio'); // audio que vai trazer
-const cover = document.getElementById('cover'); // imagem da musica
-const play = document.getElementById('play'); // quando click no play, ele começa a tocar a musica
-const next = document.getElementById('next'); // voltar uma musica
-const previous = document.getElementById('previous'); // avançar uma musica
-const likeButton = document.getElementById('like'); // coraçao 
-const currentProgress = document.getElementById('current-progress'); // tempo da musica
-const progressContainer = document.getElementById('progress-container');  //tempo da musica
-const shuffleButton = document.getElementById('shuffle');
-const repeatButton = document.getElementById('repeat'); // repete a musica
-const songTime = document.getElementById('song-time'); // quantidade de tempo
-const totalTime = document.getElementById('total-time');   // tempo maximo da musica
-
-// músicas escolhidas
-const highwayToHell = {
-    songName: 'Highway to Hell',
-    artist: 'AC/DC',
-    file: 'highway_to_hell',
-    liked: false,
-};
-
-const billieJean = {
-    songName: 'Billie Jean',
-    artist: 'Michael Jackson',
-    file: 'BillieJean',
-    liked: false,
-};
-
-// fecha músicas escolhidas
-
-// Playlist e variáveis
-let isPlaying = false;  
-let isShuffled = false;
-let repeatOn = false;
-let currentSongIndex = 0;
-const originalPlaylist = [highwayToHell, billieJean]; // chama a variavel com a musica
-let playlist = [...originalPlaylist];
-
-// Função para atualizar o botão de like
-function likeButtonRender() {
-    if (playlist[currentSongIndex].liked) {
-        likeButton.querySelector('.bi').classList.remove('bi-heart');
-        likeButton.querySelector('.bi').classList.add('bi-heart-fill');
-        likeButton.classList.add('button-active');
-    } else {
-        likeButton.querySelector('.bi').classList.add('bi-heart');
-        likeButton.querySelector('.bi').classList.remove('bi-heart-fill');
-        likeButton.classList.remove('button-active');
-    }
-}
-
-// Alternar estado de "like"
-function likeButtonClicked() {
-    playlist[currentSongIndex].liked = !playlist[currentSongIndex].liked;
-    likeButtonRender();
-}
-
-// Inicializar a música atual
-function initializeSong() {
-    const currentSong = playlist[currentSongIndex];
-    cover.src = `img/${currentSong.file}.jpg`;
-    songName.innerText = currentSong.songName;
-    bandName.innerText = currentSong.artist;
-    song.src = `music/${currentSong.file}.mp3`;
-    likeButtonRender();
-}
-
-// Reproduzir a música
-function playSong() {
-    play.querySelector(".bi").classList.remove("bi-play-circle-fill");
-    play.querySelector(".bi").classList.add("bi-pause-circle-fill");
-    song.play();
-    isPlaying = true;
-}
-
-// Pausar a música
-function pauseSong() {
-    play.querySelector(".bi").classList.add("bi-play-circle-fill");
-    play.querySelector(".bi").classList.remove("bi-pause-circle-fill");
-    song.pause();
-    isPlaying = false;
-}
-
-// Alternar play/pause
-function playPauseDecider() {
-    if (isPlaying == true) {
-        pauseSong();
-    } else {
-        playSong();
-    }
-}
-
-// Música anterior
-function previousSong() {
-    currentSongIndex = (currentSongIndex === 0) ? playlist.length - 1 : currentSongIndex - 1;
-    initializeSong();
-}
-
-// Próxima música
-function nextSong() {
-    currentSongIndex = (currentSongIndex === playlist.length - 1) ? 0 : currentSongIndex + 1;
-    pauseSong(); 
-    initializeSong();
-}
-
-// Atualizar progresso da música
-function updateProgress() {
-    const barWidth = (song.currentTime / song.duration) * 100;
-    currentProgress.style.setProperty('--progress', `${barWidth}%`);
-    songTime.innerText = toHHMMSS(song.currentTime);
-}
-
-// Pular para uma parte específica da música
-function jumpTo(event) {
-    const width = progressContainer.clientWidth;
-    const clickPosition = event.offsetX;
-    const jumpToTime = (clickPosition / width) * song.duration;
-    song.currentTime = jumpToTime;
-}
-
-// Embaralhar playlist
-function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-}
-
-// Alternar botão de shuffle
-function shuffleButtonClicked() {
-    isShuffled = !isShuffled;
-    if (isShuffled) {
-        shuffleArray(playlist);
-    } else {
-        playlist = [...originalPlaylist];
-    }
-    shuffleButton.classList.toggle('button-active');
-}
-
-// Alternar botão de repeat
-function repeatButtonClicked() {
-    repeatOn = !repeatOn;
-    repeatButton.classList.toggle('button-active');
-}
-
-// Converter tempo para formato HH:MM:SS
-function toHHMMSS(seconds) {
-    const hour = Math.floor(seconds / 3600);
-    const min = Math.floor((seconds - hour * 3600) / 60);
-    const sec = Math.floor(seconds - hour * 3600 - min * 60);
-    return `${hour.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
-}
-
-// Atualizar tempo total da música
-function updateTotalTime() {
-    totalTime.innerText = toHHMMSS(song.duration);
-}
-
-// Configurar eventos
-song.addEventListener('ended', () => {
-    if (repeatOn) {
-        playSong();
-    } else {
-        nextSong();
-    }
-});
-song.addEventListener('timeupdate', updateProgress);
-song.addEventListener('loadedmetadata', updateTotalTime);
-progressContainer.addEventListener('click', jumpTo);
-play.addEventListener('click', playPauseDecider);
-next.addEventListener('click', nextSong);
-previous.addEventListener('click', previousSong);
-shuffleButton.addEventListener('click', shuffleButtonClicked);
-repeatButton.addEventListener('click', repeatButtonClicked);
-likeButton.addEventListener('click', likeButtonClicked);
-
-// Inicializar a primeira música
-initializeSong();
-
-    </script>
+</main>
+<script src="Js/script.js"></script>
 
 </body>
 
